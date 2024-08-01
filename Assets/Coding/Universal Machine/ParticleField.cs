@@ -14,15 +14,23 @@ namespace UniversalMachine
         List<int> PreviousParticles;
         int[] CurrentParticles;
 
+        public List<LightSource> LightSources = new List<LightSource>();
+
         public int ParticlesPerUpdate;
 
         public System.Random r = new System.Random();
 
         public static ParticleField Instance;
 
+        public EnscribedDisc Disc;
+
+        public ExistenceGradient Zone;
+
         public SimpleShacle Shackle;
 
         public ForceExchange ForceExchanger;
+
+        public SpacetimeFabric Substrate;
 
         public void Attach(Particle particle)
         {
@@ -57,8 +65,13 @@ namespace UniversalMachine
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
+            foreach (Particle particle in Simulands)
+            {
+                particle.Define(Time.deltaTime);
+            }
+
             CurrentParticles = new int[ParticlesPerUpdate];
 
             int y;
@@ -72,7 +85,20 @@ namespace UniversalMachine
                 if (CurrentParticles.Contains(y))
                     continue;
 
-                Simulands[y].ParticleUpdate();
+                Disc.ApplyForce(Simulands[y]);
+
+                Zone.Friction(Simulands[y]);
+                Zone.ApplyForceAffair(Simulands[y]);
+
+                Substrate.UpdateWarpingVectors(Simulands[y]);
+
+                Substrate.UpdateParticleShaderProperties(Simulands[y].material);
+
+                foreach (LightSource light in LightSources)
+                {
+                    light.UpdateParticle(Simulands[y]);
+                }
+                
 
                 Shackle.Bind(Simulands[y]);
 
@@ -84,14 +110,6 @@ namespace UniversalMachine
             List<Particle> simulatedParticles = new List<Particle>();
             foreach (int i in CurrentParticles) { simulatedParticles.Add(Simulands[i]); }
             ForceExchanger.Exchange(simulatedParticles);
-        }
-
-        private void FixedUpdate()
-        {
-            foreach (Particle particle in Simulands)
-            {
-                particle.Define(Time.deltaTime);
-            }
         }
     }
 }

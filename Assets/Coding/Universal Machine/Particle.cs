@@ -1,14 +1,16 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace UniversalMachine
 {
     public class Particle : MonoBehaviour
     {
         public const float Nearest = 1.4013e-25f;
-        public const float EnergeticResistance = 1f;
+        public const float EnergeticResistance = 4f;
         public const float FactualRestraint = 1f;
         public const float KineticEasing = 10f;
         public const float ContactWindow = 1f;
@@ -22,12 +24,6 @@ namespace UniversalMachine
             public float Dimensionality;
         }
 
-        public enum StateFocus
-        {
-            Energy = 1,
-            Position = -1
-        }
-
         public enum EffectorFolding
         {
             Energy,
@@ -37,7 +33,14 @@ namespace UniversalMachine
             NonSystematic
         }
 
-
+        // The Energetic, Positional, Spacial, and Mechanical properties of the particle
+        // These represent each effect as it is folded into a dimensional axis of an arena
+        // They are the total possible discernable properties of the particle, not the actual values
+        // The w component of each vector is the temporal component, or how long it will take to discern the property
+        // Ascription is the energy of the particle
+        // Assertion is the position of the particle
+        // Conductance is the force applied to the particle
+        // Attunement is the torque applied to the particle
         public Vector4 Ascription = new Vector4(1,1,1, 1);
 
         public Vector4 Assertion = new Vector4(1,1,1, 1);
@@ -46,18 +49,25 @@ namespace UniversalMachine
 
         public Vector4 Attunement = new Vector4(1,1,1, 1);
 
+        //Current Dimensional folding of the particle in each respective axis of effect and affair
+        //They represent how the particle is currently discerned in the arena
+        //This influences the particle's behavior and interactions with other particles
         //Energetic, Positional, Spacial, Mechanical
-        public Vector4 Descriptor = new Vector4();
+        public Vector4 Reach = new Vector4();
 
 
         public Vector3 Definition { get; private set; } = Vector3.zero;
 
         public float Destination { get; private set; } = 0;
 
+        // Contact Depth with other existential entities
         public float Depth;
 
-
+        //Current DIsplacement delta built up from forces
         public Vector3 Delta = Vector3.zero;
+
+        // The results of the projection of the particle's Delta onto the ascription plane
+        public List<Vector3> Projections = new List<Vector3>();
 
 
         public int SlamEvents = 0;
@@ -70,9 +80,22 @@ namespace UniversalMachine
         public delegate void OnDestroyAction();
         public OnDestroyAction onDestroy;
 
-
+        // The function that will be used to project the particle's Delta onto the ascription plane
+        // This will give us the force that is applied to the particle from other nearby ascriptions
         public Func<Vector3, Vector3, Vector3, Vector3> Project;
 
+        public Vector3 Velocity
+        {
+            get { return transform.localPosition - lastPosition; }
+        }
+
+        Vector3 lastPosition = Vector3.zero;
+
+        public Material material;
+
+        public SpacetimeFabric substrate;
+
+        // This function represents the particle's loss of energy over time to the environment
         public Func<double, double> PrimaryReduction
         {
             get
@@ -86,6 +109,7 @@ namespace UniversalMachine
             }
         }
 
+        // This function represents the particle;s loss of positionment over time to the environment
         public Func<double, double> SecondaryReduction
         {
             get
@@ -99,6 +123,7 @@ namespace UniversalMachine
             }
         }
 
+        // This function represents the particle's loss of force over time to the environment
         public Func<double, double> TertiaryReduction
         {
             get
@@ -113,13 +138,14 @@ namespace UniversalMachine
             }
         }
 
+        // This function represents the particle's loss of torque over time to the environment
         public Func<double, double> QuaternaryReduction
         {
             get
             {
                 return new Func<double, double>((regionalArea) =>
                 {
-                    double fAvg = (Conductance.x + Conductance.y + Conductance.z) / 3;
+                    double fAvg = (Attunement.x + Attunement.y +Attunement.z) / 3;
                     double syphon = 1 / fAvg * (Depth / regionalArea);
 
                     return syphon * ContactWindow;
@@ -348,69 +374,31 @@ namespace UniversalMachine
             return limit;
         }
 
-        //List<Vector3> simulantVectors;
-
         public void Simulate(float temporal)
         {
-            //Debug.Log("A: " + Position + " | " + Energy + " | " + Force + " | " + Torque);
-            //float forceOffset = 1 / Force.w * deltaTime;
-            //float torqueOffset = 1 / Torque.w  * deltaTime;
-
             Vector3 delta = Assert(Time.deltaTime);
             Vector3 vail = Ascribe(Time.deltaTime);
             Vector3 destinate = Conduct(Time.deltaTime);
             Vector3 juncture = Attune(Time.deltaTime);
 
-            //Debug.Log("Delta: " + delta);
-            //Debug.Log("Vail: " + vail);
-            //Debug.Log("Destinate: " + destinate);
-            //Debug.Log("Juncture: " + juncture);
-
-            //simulantVectors = new List<Vector3>();
-
-            //simulantVectors.Add(delta);
-            //simulantVectors.Add(vail);
-            //simulantVectors.Add(destinate);
-            //simulantVectors.Add(juncture);
-
-            //simulantVectors = ApplicateMultiplate(simulantVectors);
-
-            //delta = simulantVectors[0];
-            //vail = simulantVectors[1];
-            //destinate = simulantVectors[2];
-            //juncture = simulantVectors[3];
-
-            
-            Vector3 effect = new Vector3(
-                delta.x + ((destinate.x * juncture.x) / vail.x),
-                delta.y + ((destinate.y * juncture.y) / vail.y),
-                delta.z + ((destinate.z * juncture.z) / vail.z)
+            Vector3 applicant = new Vector3(
+                delta.x * ((destinate.x * juncture.x) / (vail.x / EnergeticResistance)),
+                delta.y * ((destinate.y * juncture.y) / (vail.y / EnergeticResistance)),
+                delta.z * ((destinate.z * juncture.z) / (vail.z / EnergeticResistance))
                 );
 
-            effect = Applicate(effect);
+            applicant = Applicate(applicant);
 
-            //Debug.Log("Effect: " + effect);
-
-            Vector3 projection = Project(delta, effect, vail);
-
-            //Debug.Log("Delta: " + delta);
-            //Debug.Log("d*j :" + (destinate.x * juncture.x));
-            //Debug.Log("Vail: " + vail);
-            //Debug.Log("Effect: " + effect);
-            //Debug.Log("Vail: " + vail);
-            //Debug.Log("Projection: " + projection);
-
+            Vector3 projection = Project(delta, applicant, vail);
             projection = Applicate(projection);
+
+            Projections.Add(projection);
 
             float disruption = temporal / Mathf.Abs(delta.magnitude) * Mathf.Abs(projection.magnitude);
 
-            //Debug.Log("Projection: " + projection);
-            //Debug.Log("Disruption: " + disruption);
-
-
             IndiscernProperty(
                 delta,
-                new Vector3(effect.x, effect.y, effect.z),
+                new Vector3(applicant.x, applicant.y, applicant.z),
                 temporal - disruption,
                 (v) => { Assertion = v; },
                 () => { return Assertion; });
@@ -428,13 +416,9 @@ namespace UniversalMachine
                 temporal,
                 (v) => { Attunement = v; },
                 () => { return Attunement; });
-
-
-
-            Delta += effect + projection;
         }
 
-        float Indiscern(float range)
+        public float Indiscern(float range)
         {
             return (r.Next(-10, 10) * (float)r.NextDouble() * range) / 10;
         }
@@ -627,16 +611,16 @@ namespace UniversalMachine
 
         public void Advance(float deltaTime)
         {
-            float energySolve = Descriptor.x * Ascription.w * deltaTime;
+            float energySolve = Reach.x * Ascription.w * deltaTime;
             Ascription = new Vector4(Ascription.x * energySolve, Ascription.y * energySolve, Ascription.z * energySolve, Ascription.w - energySolve);
 
-            float positionSolve = Descriptor.y * Assertion.w * deltaTime;
+            float positionSolve = Reach.y * Assertion.w * deltaTime;
             Assertion = new Vector4(Assertion.x * positionSolve, Assertion.y * positionSolve, Assertion.z * positionSolve, Assertion.w - positionSolve);
 
-            float forceSolve = Descriptor.z * Conductance.w * deltaTime;
+            float forceSolve = Reach.z * Conductance.w * deltaTime;
             Conductance = new Vector4(Conductance.x * forceSolve, Conductance.y * forceSolve, Conductance.z * forceSolve, Conductance.w - forceSolve);
 
-            float torqueSolve = Descriptor.w * Attunement.w * deltaTime;
+            float torqueSolve = Reach.w * Attunement.w * deltaTime;
             Attunement = new Vector4(Attunement.x * torqueSolve, Attunement.y * torqueSolve, Attunement.z * torqueSolve, Attunement.w - torqueSolve);
         }
 
@@ -647,48 +631,47 @@ namespace UniversalMachine
 
         }
 
-        public void SetPosition()
+        public void SetPosition(Vector3 deltaPosition)
         {
-            transform.localPosition += Delta;
-            Delta = Vector3.zero;
+            lastPosition = transform.localPosition;
+            transform.localPosition += deltaPosition;
         }
-
-        float pause;
 
         public void Define(float delta)
         {
             Destination += delta;
         }
 
-        public void ParticleUpdate()
-        {
-            //if (pause < 1f)
-            //{
-            //    pause += Time.deltaTime;
-            //    return;
-            //}
-            //pause = 0f;
-
-            Simulate(Destination);
-            
-            //Clear Destination after simulation
-            Destination = 0;
-            //Advance(Time.deltaTime);
-
-            
-
-            //transform.localPosition = (Vector3)Move(Time.deltaTime);
-        }
-
         void Start()
         {
+            material = GetComponent<Renderer>().material;
             ParticleField.Instance.Attach(this);
             onDestroy += () => { ParticleField.Instance.Detach(this); };
         }
 
+        void Update()
+        {
+            material.SetFloat("_ParticleDepth", Depth);
+            material.SetFloat("_ParticleReach", Reach.magnitude);
+            material.SetVector("_ParticleAscription", Ascription);
+            material.SetVector("_ParticleDelta", Delta); // New line for Delta
+        }
+
         void FixedUpdate()
         {
-            SetPosition();
+            // This is where the magic happens
+            Simulate(Destination);
+            Destination = 0;
+
+            // Apply projections to the particle's Delta
+            Vector3 totalProjection = Vector3.zero;
+            foreach (Vector3 projection in Projections)
+            {
+                totalProjection += projection;
+            }
+            Projections.Clear(); // Clear the list after applying
+
+            Delta += totalProjection;  // Add the combined projection to Delta
         }
 
         void OnDestroy()

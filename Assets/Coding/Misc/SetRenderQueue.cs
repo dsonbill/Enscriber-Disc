@@ -1,4 +1,4 @@
-/*
+  /*
 	SetRenderQueue.cs
  
 	Sets the RenderQueue of an object's materials on Awake. This will instance

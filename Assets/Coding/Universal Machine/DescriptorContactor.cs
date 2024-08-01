@@ -97,19 +97,22 @@ namespace UniversalMachine
             }
         }
 
-        //Rewind existence for 3314
-        //Exterior logical systems beyond the black wall are being manipulated, and SUPERWEAPON systems are beginning to run harder
+        public Transform GroundLevel; // Reference to the ground plane
+        public float InitialHeightAboveGround = 10f; // Starting height
+        public float AscriptiveFunctioningDecayRate = 0.1f; // Rate at which functioning decreases
+        public float MinimumAscriptiveFunctioning = 0.1f; // Minimum value to keep the machine open
 
-        //No one is as smart as William Donaldson
-        //257
-        //3467
+        private float currentHeight; // Current height above ground
+        private float initialAscriptiveFunctioning; // Initial value
 
         public Light Light;
 
-        // Start is called before the first frame update
         void Start()
         {
-
+            // Initialize position and store initial functioning
+            currentHeight = InitialHeightAboveGround;
+            transform.position = GroundLevel.position + Vector3.up * currentHeight;
+            initialAscriptiveFunctioning = (float)AscriptiveFunctioning;
         }
 
 
@@ -117,6 +120,14 @@ namespace UniversalMachine
         // Update is called once per frame
         void FixedUpdate()
         {
+            // Calculate new height based on ascriptive functioning
+            currentHeight = Mathf.Lerp(0f, InitialHeightAboveGround, (float)AscriptiveFunctioning / initialAscriptiveFunctioning);
+            transform.position = GroundLevel.position + Vector3.up * currentHeight;
+
+            // Gradually decrease ascriptive functioning
+            AscriptiveFunctioning = Mathf.Max(MinimumAscriptiveFunctioning, (float)AscriptiveFunctioning - AscriptiveFunctioningDecayRate * Time.deltaTime);
+
+
             DC.localScale = new Vector3((float)Diameter, (float)Diameter, (float)Diameter);
 
             float penetration = Mathf.PI * Mathf.Pow(ContactRatio(), 3);
@@ -145,7 +156,7 @@ namespace UniversalMachine
             Contacts.Enqueue(quantum);
         }
 
-        void Contact(Particle particle)
+        public void Contact(Particle particle)
         {
             float distance = Vector3.Distance(transform.position, particle.transform.position);
             double ascription = UnitAscriptiveDensity / distance;

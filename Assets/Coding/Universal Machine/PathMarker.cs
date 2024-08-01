@@ -7,53 +7,88 @@ namespace UniversalMachine
 {
     public class PathMarker : MonoBehaviour
     {
+        // The maximum number of path segments to keep
         public int Limit;
+
+        // The level of influence for each path segment
+        public float InfluenceRadius = 1.0f;  // Radius of influence for each path segment
+        public float InfluenceStrength = 1.0f; // Strength of the force applied by the path
+
+        // The line renderer used to draw the path
+        public LineRenderer lineRenderer;     // Assign in Inspector
+        public Gradient energyGradient;       // Assign a gradient in Inspector
+        //public float energyLineWidthFactor = 2f; // Adjust this factor as needed
+
+        // The list of path segments
+        private List<Mark> Path = new List<Mark>();
+
+        // Consolidation
+        private float lastConsolidationTime = 0f;
+        public float consolidationInterval = 5f; // Consolidate every 5 seconds
+
+        // A single path segment
         public class Mark
         {
             public Vector3 Position;
             public Vector3 Direction;
-            public float Length;
             public Vector3 Energy;
 
             public Vector3 Proceed(Vector3 position, Vector3 destination, Vector3 energy)
             {
+                // Calculate the direction between the destination and the current position
                 Vector3 a = destination - position;
 
-                Vector3 y = Direction;
+                // Calculate the angle between the direction and the path segment
+                float angle = Vector3.SignedAngle(a, Direction, Vector3.one);
 
-                float distance = Vector3.Distance(a, y);
+                // Calculate the distance between the particle path and the path segment
+                float distance = Vector3.Distance(a, Direction);
 
-                //Debug.Log("A: " + a);
-                //Debug.Log("Y: " + y);
+                // Calculate the force based on the angle and the magnitude of the direction
+                float force = Direction.magnitude / distance / angle * Energy.magnitude * Particle.EnergeticResistance;
 
-                //Debug.Log("Angle: " + angle);
-
-                //float attack = 1 / 180 / distance;
-
-                //Debug.Log("Attack: " + attack);
-
-                float force = y.magnitude / distance;
-
-                //Debug.Log("Force: " + force);
-
-                //Vector3 warpDirection = y;
-                //Vector3 warpEnergy = Energy / Length;
-                //Vector3 pathEnergy = energy * a.magnitude;
-
-                //Vector3 warp = new Vector3((warpEnergy.x - pathEnergy.x) * warpDirection.x,
-                //    (warpEnergy.y - pathEnergy.y) * warpDirection.y,
-                //    (warpEnergy.z - pathEnergy.z) * warpDirection.z);
-
-                Vector3 warp = y * force * Energy.magnitude;
+                // Calculate the warp based on the force and the energy
+                Vector3 warp = Direction * force;
 
                 return warp;
             }
         }
 
-        public List<Mark> Path = new List<Mark>();
+        void Start()
+        {
+            // Initialize Line Renderer
+            if (lineRenderer == null)
+            {
+                lineRenderer = gameObject.AddComponent<LineRenderer>();
+            }
+            lineRenderer.positionCount = 0;
+        }
+        void UpdateLineRenderer()
+        {
+            // Update the line renderer with the path segments
+            lineRenderer.positionCount = Path.Count;
+            for (int i = 0; i < Path.Count; i++)
+            {
+                // Set the position of the line renderer
+                lineRenderer.SetPosition(i, Path[i].Position);
+
+                // Energy Visualization (Choose ONE option)
+                // Option 1: Color
+                float energyMagnitude = Path[i].Energy.magnitude;
+                lineRenderer.startColor = energyGradient.Evaluate(energyMagnitude);
+                lineRenderer.endColor = energyGradient.Evaluate(energyMagnitude);
+
+                // Option 2: Line Width
+                // float energyLineWidth = energyMagnitude * energyLineWidthFactor;
+                // lineRenderer.startWidth = energyLineWidth;
+                // lineRenderer.endWidth = energyLineWidth; 
+            }
+        }
 
         public Vector3 Project(Vector3 start, Vector3 end, Vector3 energy)
         {
+            if (!enabled) return Vector3.zero;
+
             Vector3 final = Vector3.zero;
 
             foreach (Mark marker in Path)
@@ -67,33 +102,72 @@ namespace UniversalMachine
             return final;
         }
 
+        
         public void Move(Vector3 start, Vector3 end, Vector3 energy)
         {
+            // Make a new path segment
             Mark path = new Mark();
 
+            // Set the path segment properties
             path.Position = start;
             path.Direction = (end - start);
-            path.Length = (end - start).magnitude;
             path.Energy = energy;
 
-            if (Path.Count > Limit)
-            {
-                Path.RemoveAt(Path.Count - 1);
-            }
-
+            // Add the new path segment
             Path.Add(path);
         }
 
-        // Start is called before the first frame update
-        void Start()
+        void ConsolidatePaths()
         {
+            // Calculate the number of paths to remove
+            int pathsToRemove = Path.Count - Limit / 2; // Remove half of the excess paths
+            List<Mark> marksToConsolidate = Path.GetRange(0, pathsToRemove);
+            Path.RemoveRange(0, pathsToRemove);
 
+            // Calculate median values (adjust this logic as needed)
+            Vector3 medianPosition = Vector3.zero;
+            Vector3 averageDirection = Vector3.zero;
+            Vector3 medianDirection = Vector3.zero;
+            Vector3 totalEnergy = Vector3.zero;
+
+            // Calculate the median values for the path segments to consolidate
+            foreach (Mark mark in marksToConsolidate)
+            {
+                medianPosition += mark.Position;
+                averageDirection += Mul(mark.Direction, mark.Energy.normalized);
+                totalEnergy += mark.Energy;
+            }
+
+            // Calculate the median values
+            medianPosition /= pathsToRemove;
+            medianDirection = averageDirection.normalized;    // Normalize the sum
+
+            // Add the consolidated mark
+            Path.Add(new Mark
+            {
+                Position = medianPosition,
+                Direction = medianDirection,
+                Energy = totalEnergy
+            });
         }
 
-        // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
+            // Consolidate paths if the limit is exceeded
+            if (Time.time - lastConsolidationTime >= consolidationInterval && Path.Count > Limit)
+            {
+                ConsolidatePaths();
+                lastConsolidationTime = Time.time;
+            }
+        }
 
+        public Vector3 Mul(Vector3 vector1, Vector3 vector2)
+        {
+            return new Vector3(
+                vector1.x * vector2.x,
+                vector1.y * vector2.y,
+                vector1.z * vector2.z
+                );
         }
     }
 }

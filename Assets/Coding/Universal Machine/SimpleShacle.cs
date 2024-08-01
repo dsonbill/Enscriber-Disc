@@ -9,7 +9,7 @@ namespace UniversalMachine
         public GameObject Cylinder;
         public float Diameter;
 
-        public float Binding;
+        public float Binding = 1f;
 
         System.Random r = new System.Random();
 
@@ -22,17 +22,23 @@ namespace UniversalMachine
         // Update is called once per frame
         public void Bind(Particle particle)
         {
-            Vector2 localPosition = new Vector2(particle.Assertion.x, particle.Assertion.z) - new Vector2(Cylinder.transform.localPosition.x, Cylinder.transform.localPosition.z);
-            Vector2 direction = localPosition.normalized;
-            float distance = Mathf.Abs(localPosition.magnitude);
+            if (!enabled) return;
 
-            float reduction = 1 / (Diameter * 2) * distance * Binding;
+            Vector3 particlePosition = particle.transform.position;
+            Vector3 shacklePosition = Cylinder.transform.position;
 
-            //Debug.Log(reduction);
+            Vector3 direction = shacklePosition - particlePosition;
+            float distance = direction.magnitude;
 
-            Vector3 inwardForce = (-particle.Conduct(Time.deltaTime)) * reduction;
+            // Check if particle is within the shackle's influence radius
+            if (distance <= Diameter / 2f)
+            {
+                float normalizedDistance = distance / (Diameter / 2f); // 0 at center, 1 at edge
+                float forceMagnitude = Binding * normalizedDistance * particle.Ascribe(Time.deltaTime).magnitude / Particle.EnergeticResistance;  // Scale based on energy
+                Vector3 inwardForce = -direction.normalized * forceMagnitude;
 
-            particle.AddForce(-direction * inwardForce, Vector3.zero, Time.deltaTime);
+                particle.AddForce(inwardForce, Vector3.zero, Time.deltaTime);
+            }
         }
     }
 }

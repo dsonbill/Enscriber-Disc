@@ -13,6 +13,8 @@ namespace UniversalMachine
         // Start is called before the first frame update
         public void Exchange(List<Particle>Particles)
         {
+            if (!enabled) return;
+
             foreach (Particle a in Particles)
             {
                 foreach (Particle b in Particles)

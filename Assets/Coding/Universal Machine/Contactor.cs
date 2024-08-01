@@ -30,17 +30,10 @@ namespace UniversalMachine
 
         void Awake()
         {
-            EnscriptionDiscSetup();
             ContactorSetup();
             DispensarySetup();
             ExistenceSetup();
             LimitSetup();
-        }
-        
-
-        void EnscriptionDiscSetup()
-        {
-            Meaning.Quanta = () => { return UnitQuanta; };
         }
 
         //void DarkRadiance()
@@ -84,7 +77,6 @@ namespace UniversalMachine
             {
                 Source.Birth(p);
                 Limit.Queue.Enqueue(p);
-                Radiance.Particles.Add(p);
             };
         }
 
@@ -103,6 +95,9 @@ namespace UniversalMachine
             {
                 return (Well.transform.position - exPos).normalized;
             };
+
+            Zone.Well = () => { return Well; };
+            Zone.Source = () => { return Source; };
         }
 
         private void LimitSetup()
@@ -111,7 +106,6 @@ namespace UniversalMachine
             {
                 Well.OnDestroy(p);
                 Destroy(p.gameObject);
-                Radiance.Particles.Remove(p);
             };
         }
 
