@@ -31,11 +31,8 @@ namespace UniversalMachine
         // Expostulant Affair
         public float ExpostulantAffair = 1f;
 
-        // Shader References
-        public Shader SpacetimeShader; // Assign in Inspector
-
-        // Spacetime Materiak
-        private Material Material;
+        // Spacetime Material
+        public List<Renderer> Renderers;
 
         // Maximum number of warping vectors to send to the shader
         private const int MaxWarpingVectors = 100;
@@ -120,7 +117,7 @@ namespace UniversalMachine
 
             // Update Particle Shader
             particleMaterial.SetVectorArray("_WarpingVectors", warpingVectorsArray);
-            particleMaterial.SetInt("_NumWarpingVectors", WarpVectors.Count);
+            particleMaterial.SetInt("_NumWarpingVectors", warpingVectorsArray.Length);
         }
 
         private void UpdateSpacetimeShaderProperties()
@@ -138,9 +135,12 @@ namespace UniversalMachine
             }
 
             // Update Spacetime Shader
-            if (Material == null) Material = new Material(SpacetimeShader);
-            Material.SetVectorArray("_WarpingVectors", warpingVectorsArray);
-            Material.SetInt("_NumWarpingVectors", WarpVectors.Count);
+            foreach(Renderer renderer in Renderers)
+            {
+                renderer.material.SetVectorArray("_WarpingVectors", warpingVectorsArray);
+                renderer.material.SetInt("_NumWarpingVectors", warpingVectorsArray.Length);
+            }
+            
         }
         }
 }

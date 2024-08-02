@@ -98,7 +98,8 @@ namespace UniversalMachine
                 {
                     light.UpdateParticle(Simulands[y]);
                 }
-                
+
+                ForceExchanger.Exchange(Simulands, Simulands[y]);
 
                 Shackle.Bind(Simulands[y]);
 
@@ -109,7 +110,7 @@ namespace UniversalMachine
 
             List<Particle> simulatedParticles = new List<Particle>();
             foreach (int i in CurrentParticles) { simulatedParticles.Add(Simulands[i]); }
-            ForceExchanger.Exchange(simulatedParticles);
+            
         }
     }
 }

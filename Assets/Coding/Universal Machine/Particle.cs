@@ -523,57 +523,64 @@ namespace UniversalMachine
 
         public Vector4 PositionEffector()
         {
-            float dimensionality = Ascription.w + Attunement.w + Conductance.w;
+            // 1. Calculate the overall "dimensionality" of the particle
+            float dimensionality = Ascription.w + (Attunement.w * Mathf.PI * Conductance.w);
 
-            Vector3 ener = new Vector3(Ascription.x * Ascription.w, Ascription.y * Ascription.w, Ascription.z * Ascription.w);
-            Ascription = new Vector4();
+            // 2. Combine Conductance and Attunement to calculate the effect of torque
+            Vector3 torqueEffect = Mul(Attunement, Conductance);
 
-            Vector3 tor = new Vector3(Attunement.x * Attunement.w, Attunement.y * Attunement.w, Attunement.z * Attunement.w);
-            Attunement = new Vector4();
-            
-            Vector3 four = new Vector3(Conductance.x * Conductance.w, Conductance.y * Conductance.w, Conductance.z * Conductance.w);
-            Conductance = new Vector4();
+            // 3. Scale the torque effect by the particle's energy potential (Ascription)
+            torqueEffect /= new Vector3(Ascription.x, Ascription.y, Ascription.z).magnitude; //  Scaling based on Ascription
 
-            Vector4 specifics = Mul(tor, four);
-            specifics = new Vector4(specifics.x * ener.x, specifics.y * ener.y, specifics.z * ener.z);
-            specifics.w = dimensionality;
-            return specifics;
+            // 4. Combine the scaled torque effect with the current position (Assertion)
+            //   - This represents how force and torque influence position in spacetime.
+            Vector4 newPosition = Assertion - new Vector4(torqueEffect.x, torqueEffect.y, torqueEffect.z, Assertion.w);
+
+            // 5. Adjust the "dimensionality" of the position
+            //    - This ensures that the uncertainty in position is correctly represented.
+            newPosition.w = dimensionality * 0.5f; // Adjust scaling factor as needed 
+
+            return newPosition;
         }
 
         public Vector4 AngularEffector()
         {
-            float dimensionality = Ascription.w + Assertion.w + Conductance.w;
+            // 1. Calculate the overall "dimensionality" of the particle
+            float dimensionality = Ascription.w + (Attunement.w * Mathf.PI * Conductance.w);
 
-            Vector3 ener = new Vector3(Ascription.x * Ascription.w, Ascription.y * Ascription.w, Ascription.z * Ascription.w);
-            Ascription = new Vector4();
+            // 2. Combine the particle's energy and force to determine the "rotational potential"
+            Vector3 rotationalPotential = Mul(Ascription, Conductance);
 
-            Vector3 pos = new Vector3(Assertion.x * Assertion.w, Assertion.y * Assertion.w, Assertion.z * Assertion.w);
-            Assertion = new Vector4();
+            // 3. Scale the "rotational potential" based on the particle's position (Assertion)
+            rotationalPotential *= new Vector3(Assertion.x, Assertion.y, Assertion.z).magnitude;
 
-            Vector3 four = new Vector3(Conductance.x * Conductance.w, Conductance.y * Conductance.w, Conductance.z * Conductance.w);
-            Conductance = new Vector4();
+            // 4. Update the Attunement vector, incorporating the "rotational potential"
+            Vector4 newAttunement = Attunement - new Vector4(rotationalPotential.x, rotationalPotential.y, rotationalPotential.z, Attunement.w);
 
-            Vector4 specifics = new Vector3(ener.x * four.x, ener.y * four.y, ener.z * four.z) + pos;
-            specifics.w = dimensionality;
-            return specifics;
+            // 5. Adjust the "dimensionality" of the attunement
+            newAttunement.w = dimensionality * 0.5f;
+
+            return newAttunement;
         }
 
         public Vector4 ForceEffector()
         {
-            float dimensionality = Ascription.w + Assertion.w + Attunement.w;
+            // 1. Calculate the overall "dimensionality" of the particle
+            float dimensionality = Ascription.w + (Attunement.w * Mathf.PI * Conductance.w);
 
-            Vector3 ener = new Vector3(Ascription.x * Ascription.w, Ascription.y * Ascription.w, Ascription.z * Ascription.w);
-            Ascription = new Vector4();
+            // 2. Combine the particle's position and rotational influence to determine the "forcehood" of the position
+            Vector3 forcehoodPosition = Mul(Assertion, Attunement);
 
-            Vector3 pos = new Vector3(Assertion.x * Assertion.w, Assertion.y * Assertion.w, Assertion.z * Assertion.w);
-            Assertion = new Vector4();
+            // 3. Scale the "forcehood" of the position based on the particle's energy potential
+            forcehoodPosition *= new Vector3(Ascription.x, Ascription.y, Ascription.z).magnitude;
 
-            Vector3 tor = new Vector3(Attunement.x * Attunement.w, Attunement.y * Attunement.w, Attunement.z * Attunement.w);
-            Attunement = new Vector4();
+            // 4. Update the Conductance vector, incorporating the "forcehood" of the position
+            Vector4 newForce = Conductance - new Vector4(forcehoodPosition.x, forcehoodPosition.y, forcehoodPosition.z, Conductance.w);
 
-            Vector4 specifics = new Vector3(ener.x * tor.x, ener.y * tor.y, ener.z * tor.z) + pos;
-            specifics.w = dimensionality;
-            return specifics;
+            // 5. Adjust the "dimensionality" of the force
+            newForce.w = dimensionality * 0.5f;
+
+            return newForce;
         }
 
         //ReinitializationalParamaterlessFunctionalitySystem

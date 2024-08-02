@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!23 &183833759 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6938490054434195092, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+  m_PrefabInstance: {fileID: 895800815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &295368244 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9210579366826673608, guid: 673a6f6a19b3d7349ba59c07feedd59d, type: 3}
@@ -549,6 +554,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 945758062, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 945758062, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: ContactPotential
       value: -5
       objectReference: {fileID: 0}
@@ -596,6 +605,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6938490052934432357, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1f5f98a32d8c92a45afeed7b3e8cbd7f, type: 2}
     - target: {fileID: 6938490053584479747, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -614,7 +627,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6938490054000995845, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6938490054000995845, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: lineRenderer
@@ -654,7 +667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6938490054000996088, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6938490054000996090, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_Enabled
@@ -716,6 +729,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6938490054000996095, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6938490054000996095, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: ExchangerRatio
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6938490054327419768, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -744,21 +765,37 @@ PrefabInstance:
       propertyPath: m_UseColorTemperature
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6938490054434195092, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6938490054434195092, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1f5f98a32d8c92a45afeed7b3e8cbd7f, type: 2}
+    - target: {fileID: 6938490054434195092, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1f5f98a32d8c92a45afeed7b3e8cbd7f, type: 2}
+    - target: {fileID: 6938490054915645103, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+      propertyPath: material
+      value: 
+      objectReference: {fileID: 2100000, guid: 55b02b6914f3cfe4990abfd762595b71, type: 2}
     - target: {fileID: 8511554678224782975, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: Force
       value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 8511554678224782975, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: Intensity
-      value: 300
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8511554678224782975, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: Potential
-      value: 2.47
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8511554678224782975, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -785,6 +822,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6938490054000996082, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
   m_PrefabInstance: {fileID: 895800815}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &1227231713 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6938490052934432357, guid: 7d103ba37e276f046ba1501854c7df96, type: 3}
+  m_PrefabInstance: {fileID: 895800815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1255424355
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,6 +837,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1255424357}
   - component: {fileID: 1255424356}
+  - component: {fileID: 1255424358}
   m_Layer: 0
   m_Name: Field
   m_TagString: Untagged
@@ -820,6 +863,7 @@ MonoBehaviour:
   Zone: {fileID: 2111831333}
   Shackle: {fileID: 966280332}
   ForceExchanger: {fileID: 2111831330}
+  Substrate: {fileID: 1255424358}
 --- !u!4 &1255424357
 Transform:
   m_ObjectHideFlags: 0
@@ -835,6 +879,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1255424358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255424355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4675ed987eb00b0489f78dbf1e586ecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConsolidationRadius: 1
+  ConsolidationThreshold: 0.5
+  ConsolidationInterval: 0.5
+  ExpostulantAffair: 1
+  Renderers:
+  - {fileID: 183833759}
+  - {fileID: 1227231713}
 --- !u!1001 &1526331070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1091,7 +1154,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 895800815}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1132507402}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d224078af8f7f8445963414ee0ec1b2d, type: 3}
   m_Name: 
