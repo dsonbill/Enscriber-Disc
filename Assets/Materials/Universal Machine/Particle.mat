@@ -24,19 +24,21 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Particle
-  m_Shader: {fileID: 4800000, guid: 25408cafe07a8284b9c3781e55515d9c, type: 3}
+  m_Shader: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords:
+  m_ValidKeywords:
+  - _DISABLE_DECALS
+  - _DISABLE_SSR
   - _DISABLE_SSR_TRANSPARENT
   - _ENABLE_GEOMETRIC_SPECULAR_AA
   - _MATERIAL_FEATURE_IRIDESCENCE
   - _NORMALMAP_TANGENT_SPACE
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2000
   stringTagMap: {}
   disabledShaderPasses:
   - TransparentDepthPrepass
@@ -44,7 +46,7 @@ Material:
   - TransparentBackface
   - RayTracingPrepass
   - MOTIONVECTORS
-  m_LockedProperties: 
+  m_LockedProperties: _Smoothness
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -242,9 +244,12 @@ Material:
     - _Ior: 1.5
     - _IridescenceMask: 1
     - _IridescenceThickness: 1
+    - _LightAttenuation: 1
+    - _LightIntensity: 1
+    - _LightPotential: 1
     - _LinkDetailsWithBase: 0
     - _MaterialID: 3
-    - _Metallic: 0.152
+    - _Metallic: 0
     - _MetallicRemapMax: 0
     - _MetallicRemapMin: 0
     - _Mode: 0
@@ -266,7 +271,7 @@ Material:
     - _PerPixelSorting: 0
     - _RayTracing: 0
     - _ReachIntensity: 1
-    - _ReceivesSSR: 1
+    - _ReceivesSSR: 0
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 0
     - _Smoothness: 0.767
@@ -279,16 +284,16 @@ Material:
     - _SpecularOcclusionMode: 1
     - _SrcBlend: 1
     - _StencilRef: 0
-    - _StencilRefDepth: 8
-    - _StencilRefGBuffer: 10
-    - _StencilRefMV: 40
+    - _StencilRefDepth: 0
+    - _StencilRefGBuffer: 2
+    - _StencilRefMV: 32
     - _StencilWriteMask: 6
     - _StencilWriteMaskDepth: 9
     - _StencilWriteMaskGBuffer: 15
     - _StencilWriteMaskMV: 41
     - _StriationScale: 10
     - _SubsurfaceMask: 1
-    - _SupportDecals: 1
+    - _SupportDecals: 0
     - _SurfaceType: 0
     - _TexWorldScale: 1
     - _TexWorldScaleEmissive: 1
@@ -314,9 +319,9 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.2905661, g: 0.21523419, b: 0.13980065, a: 1}
+    - _BaseColor: {r: 0.53396225, g: 0.9817087, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.29056606, g: 0.21523416, b: 0.13980061, a: 1}
+    - _Color: {r: 0.5339622, g: 0.9817087, b: 1, a: 1}
     - _DepthColor: {r: 0, g: 0.5, b: 1, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
@@ -325,9 +330,12 @@ Material:
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightDirection: {r: 0, g: 0, b: 0, a: 0}
+    - _LightPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _MainColor: {r: 0, g: 1, b: 0.77468705, a: 1}
     - _ParticleAscription: {r: 0, g: 0, b: 0, a: 0}
-    - _ReachColor: {r: 1, g: 0, b: 1, a: 1}
+    - _ParticleDelta: {r: 0, g: 0, b: 0, a: 1}
+    - _ReachColor: {r: 0.79622644, g: 0.38222954, b: 0.2088216, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}

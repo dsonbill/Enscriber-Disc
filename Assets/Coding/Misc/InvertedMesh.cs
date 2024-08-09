@@ -3,16 +3,22 @@ using UnityEngine;
 
 public class InvertedMesh : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
-        mesh.triangles = mesh.triangles.Reverse().ToArray();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Reverse triangles
+        mesh.triangles = mesh.triangles.Reverse().ToArray();
+
+        // Invert normals
+        Vector3[] normals = mesh.normals;
+        for (int i = 0; i < normals.Length; i++)
+        {
+            normals[i] = -normals[i];
+        }
+        mesh.normals = normals;
+
+        // You might also need to recalculate the mesh tangents
+        mesh.RecalculateTangents();
     }
 }

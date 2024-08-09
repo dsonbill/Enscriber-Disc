@@ -72,39 +72,32 @@ namespace UniversalMachine
 
             float x = (float)Diameter() / 2 * (float)r.NextDouble() * posX;
             float y = SafetyZone() + (float)r.NextDouble();
-            float z = (float)Diameter() / 2 * (float)r.NextDouble()  * posZ;
+            float z = (float)Diameter() / 2 * (float)r.NextDouble() * posZ;
 
-            float fx = Approach() * (float)r.NextDouble();
-            float fy = Approach() * (float)r.NextDouble();
-            float fz = Approach() * (float)r.NextDouble();
+            // No initial force needed
+            // Vector3 initialForce = new Vector3(fx, fy, fz);
 
-            double ascriptiveDensity = ExistentCapacity() * (float)r.NextDouble();
-
-            //Vector3 bang = Source.transform.up * (float)Source.EnergyDensity * (float)Source.ParticleMass * (float)r.NextDouble();
-
-            Vector3 initialForce = new Vector3(fx, fy, fz);
             Vector3 initialPosition = new Vector3(x, y, z);
-            Vector3 initialEnergy = Vector3.one * (float)ascriptiveDensity;
-
-            //Debug.Log(initialEnergy);
+            // No initial energy needed
+            // Vector3 initialEnergy = Vector3.one * (float)ascriptiveDensity;
 
             GameObject particle = Instantiate(Prefabricant, initialPosition, Quaternion.identity);
             particle.transform.parent = QuantaTree.transform;
-            particle.transform.localPosition = initialPosition;
+            particle.transform.position = initialPosition;
             particle.SetActive(true);
 
             Particle p = particle.GetComponent<Particle>();
 
             p.Project = ProjectionReceivance();
 
-            //ds967',[;/\'
+            // Initialize Ascription with a default value 
+            p.Ascription = new Vector4(1, 1, 1, 1);
 
-            p.Assertion = new Vector4(initialPosition.x, initialPosition.y, initialPosition.z, 1);
-            p.Ascription = new Vector4(initialEnergy.x, initialEnergy.y, initialEnergy.z, 1);
+            // Initialize Depth with a default value
+            p.Depth = 1f; // Replace with a more meaningful calculation if necessary 
 
-            p.Depth = ContactDepth(); // * (float)r.NextDouble();
-
-            p.AddForce(initialForce, Vector3.zero, Time.deltaTime);
+            // No initial force needed
+            // p.AddForce(initialForce, Vector3.zero, Time.deltaTime);
 
             IndexParticle(p);
 

@@ -98,7 +98,7 @@ namespace UniversalMachine
         }
 
         public Transform GroundLevel; // Reference to the ground plane
-        public float InitialHeightAboveGround = 10f; // Starting height
+        public float InitialHeightAboveGround = 1f; // Starting height
         public float AscriptiveFunctioningDecayRate = 0.1f; // Rate at which functioning decreases
         public float MinimumAscriptiveFunctioning = 0.1f; // Minimum value to keep the machine open
 

@@ -891,7 +891,7 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.75
   multipleScatteringIntensity:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   m_FogControlMode:
     m_OverrideState: 1
@@ -1501,10 +1501,10 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 6378.1
   renderingSpace:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   centerMode:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   planetCenter:
     m_OverrideState: 1
@@ -1756,10 +1756,10 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   intensityMultiplier:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   skyOcclusionIntensityMultiplier:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
 --- !u!114 &3850078245021551287
 MonoBehaviour:
@@ -2085,7 +2085,7 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   atmosphericScattering:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   renderingMode:
     m_OverrideState: 1
@@ -2121,13 +2121,13 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0
   ozoneDensityDimmer:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   ozoneMinimumAltitude:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 20000
   ozoneLayerWidth:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 20000
   groundTint:
     m_OverrideState: 1
@@ -2542,10 +2542,10 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 0, w: 0}
   seedMode:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   customSeed:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
 --- !u!114 &7686318427622180703
 MonoBehaviour:

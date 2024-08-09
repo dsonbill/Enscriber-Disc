@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UniversalMachine
 {
@@ -21,7 +24,7 @@ namespace UniversalMachine
         }
 
         // List to store warping vectors
-        private List<WarpVector> WarpVectors = new List<WarpVector>();
+        public List<WarpVector> WarpVectors = new List<WarpVector>();
 
         // Consolidation Parameters
         public float ConsolidationRadius = 1.0f;
@@ -38,6 +41,9 @@ namespace UniversalMachine
         private const int MaxWarpingVectors = 100;
 
         private float lastConsolidationTime = 0f;
+
+        // The threshold for recording a warp vector
+        public float WarpVectorThreshold = 0.5f;
 
         public Vector3 Mul(Vector3 vector1, Vector3 vector2)
         {
@@ -61,7 +67,45 @@ namespace UniversalMachine
             }
 
             // 3. Update Shader Properties (for visualization and particle positioning)
-            UpdateSpacetimeShaderProperties();
+            //UpdateSpacetimeShaderProperties();
+        }
+
+        // Function for calculating the warped spacetime position of a particle
+        public Vector3 CalculateWarpedPosition(Particle particle)
+        {
+            // Create tensors from particle properties and warping vectors
+            Tensor particleTensor = gameObject.AddComponent<Tensor>();
+            particleTensor.Init(
+                // Ascription
+                new float[3] { particle.Ascription.x, particle.Ascription.y, particle.Ascription.z },
+                // Assertion
+                new float[3] { particle.Assertion.x, particle.Assertion.y, particle.Assertion.z },
+                // Conductance
+                new float[3] { particle.Conductance.x, particle.Conductance.y, particle.Conductance.z },
+                // Attunement
+                new float[3] { particle.Attunement.x, particle.Attunement.y, particle.Attunement.z }
+            );
+
+            // Create a tensor for the warp vectors
+            Tensor warpTensor = gameObject.AddComponent<Tensor>();
+            IEnumerable<float[]> warpVectorsSelection = WarpVectors.Select(warpVector => new float[3] { warpVector.Direction.x, warpVector.Direction.y, warpVector.Direction.z });
+            warpTensor.Init(
+                // Get the x, y, and z components of the warp vectors
+                warpVectorsSelection.ToArray()[0],
+                warpVectorsSelection.ToArray()[1],
+                warpVectorsSelection.ToArray()[2],
+                // Get the magnitudes of the warp vectors
+                WarpVectors.Select(warpVectors => warpVectors.Magnitude).ToArray()
+            );
+
+            // Calculate the tensor product 
+            Tensor spacetimeTensor = particleTensor.TensorProduct(warpTensor);
+
+            // Apply the tensor to the particle's position
+            // ... (You will need to implement this based on Contact Theory's principles) ...
+            Vector3 warpedPosition = particle.transform.position;
+
+            return warpedPosition;
         }
 
         // Method to add new warping vectors from particles
@@ -73,15 +117,36 @@ namespace UniversalMachine
         // Method to update warping vectors based on particle expostulation
         public void UpdateWarpingVectors(Particle particle)
         {
-            // TODO: Calculate expostulation value using particle.Expostulate(Time.deltaTime)
-            float expostulationValue = particle.Expostulate(Time.deltaTime);
+            // TODO: Calculate expostulation value and contact area
+            float expostulationValue = particle.Expostulate(WarpVectorThreshold);
+            //Debug.Log($"Expostulation Value: {expostulationValue}");
+            float contactArea = particle.CalculateContactArea(); // Replace 'someArea' with your area calculation
+            //Debug.Log($"Contact Area: {contactArea}");
 
-            // TODO: Calculate warping direction and magnitude based on Contact Theory principles
-            Vector3 warpDirection = particle.Velocity.normalized * Mathf.Pow(Mul(particle.Velocity.normalized, particle.Velocity).magnitude, Time.deltaTime); // Example - Replace with your logic
-            float warpMagnitude = expostulationValue * ExpostulantAffair; // Example - Replace with your logic
+            // Calculate warp direction using particle velocity and warp vector threshold
+            Vector3 warpDirection = particle.Velocity.normalized * Mathf.Pow(Mul(particle.Velocity.normalized, particle.Velocity).magnitude, WarpVectorThreshold) * Particle.ContactWindow;
+            //Debug.Log($"Velocity: {particle.Velocity}");
+            //Debug.Log($"Velocity Magnitude: {particle.Velocity.magnitude}");
+            //Debug.Log($"Velocity Normalized: {particle.Velocity.normalized}");
+            //Debug.Log($"Warp Direction: {warpDirection}");
 
-            // Add or update the warping vector for this particle
+            // Calculate force reduction using TertiaryReduction
+            float forceReduction = (float)particle.TertiaryReduction(contactArea);
+            warpDirection *= forceReduction;
+            //Debug.Log($"Force Reduction: {forceReduction}");
+
+            // Calculate warp magnitude using QuaternaryReduction (for torque influence)
+            float warpMagnitude = expostulationValue * ExpostulantAffair * (float)particle.QuaternaryReduction(contactArea); // Replace 'someArea' with your area calculation
+            //Debug.Log($"Warp Magnitude: {warpMagnitude}");
+
+            // Add the warp vector
             AddWarpVector(particle.transform.position, warpDirection, warpMagnitude);
+            //Debug.Log($"Warp Vector Position: {particle.transform.position}");
+            //Debug.Log($"Warp Vector Direction: {warpDirection}");
+            //Debug.Log($"Warp Vector Magnitude: {warpMagnitude}");
+
+            // Reset the particle's time since warped
+            particle.TimeSinceWarped = 0f;
         }
 
         // Method to consolidate nearby warping vectors

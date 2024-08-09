@@ -72,6 +72,9 @@ namespace UniversalMachine
                 particle.Define(Time.deltaTime);
             }
 
+        }
+        void Update() {
+
             CurrentParticles = new int[ParticlesPerUpdate];
 
             int y;
@@ -90,26 +93,31 @@ namespace UniversalMachine
                 Zone.Friction(Simulands[y]);
                 Zone.ApplyForceAffair(Simulands[y]);
 
-                Substrate.UpdateWarpingVectors(Simulands[y]);
+                //if(Simulands[y].TimeSinceWarped >= Substrate.WarpVectorThreshold)
+                //    Substrate.UpdateWarpingVectors(Simulands[y]);
 
-                Substrate.UpdateParticleShaderProperties(Simulands[y].material);
+                //Substrate.UpdateParticleShaderProperties(Simulands[y].material);
 
                 foreach (LightSource light in LightSources)
                 {
                     light.UpdateParticle(Simulands[y]);
                 }
 
-                ForceExchanger.Exchange(Simulands, Simulands[y]);
-
                 Shackle.Bind(Simulands[y]);
+
+                List<Particle> simulatedParticles = new List<Particle>();
+                foreach (int c in CurrentParticles) 
+                    simulatedParticles.Add(Simulands[c]);
+
+                if (simulatedParticles.Count > 0)
+                    ForceExchanger.Exchange(simulatedParticles, Simulands[y]);
 
                 CurrentParticles[i] = y;
             }
 
             PreviousParticles = new List<int>(CurrentParticles);
 
-            List<Particle> simulatedParticles = new List<Particle>();
-            foreach (int i in CurrentParticles) { simulatedParticles.Add(Simulands[i]); }
+            
             
         }
     }

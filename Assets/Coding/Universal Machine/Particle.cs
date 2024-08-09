@@ -84,6 +84,12 @@ namespace UniversalMachine
         // This will give us the force that is applied to the particle from other nearby ascriptions
         public Func<Vector3, Vector3, Vector3, Vector3> Project;
 
+        // Time since last warping vector update
+        public float TimeSinceWarped = 0f;
+
+        // Last recorded position for warping
+        public Vector3 LastWarpedPosition = Vector3.zero;
+
         public Vector3 Velocity
         {
             get { return transform.localPosition - lastPosition; }
@@ -93,7 +99,7 @@ namespace UniversalMachine
 
         public Material material;
 
-        public SpacetimeFabric substrate;
+        public ParticlePositionManager positionManager;
 
         // This function represents the particle's loss of energy over time to the environment
         public Func<double, double> PrimaryReduction
@@ -153,7 +159,21 @@ namespace UniversalMachine
             }
         }
 
-        
+        // Calculate the contact area based on a particle's various interactions with its environment
+        public float CalculateContactArea()
+        {
+            // Velocity influence
+            float contactArea = (1 / Velocity.magnitude);
+
+            // Energy influence (Ascription)
+            contactArea *= Ascription.magnitude;
+
+            // Positionment discernibility influence (refined)
+            float positionmentMagnitude = Assertion.magnitude; // Get the magnitude of Assertion
+            contactArea *= (1 - (Assertion.w / positionmentMagnitude)); // Normalize by positionment magnitude
+
+            return contactArea;
+        }
 
         public float GetDiscernmentRatio(float discernment, float temporal)
         {
@@ -162,8 +182,12 @@ namespace UniversalMachine
 
         public void AddForce(Vector3 f, Vector3 point, float temporal)
         {
+            //Debug.Log("f,p,t: " + f + "," + point + "," + temporal);
+
             Vector3 contactForce;
             float energyMagnitude = Ascribe(temporal).magnitude;
+
+            //Debug.Log("Ascribe(dT): " + energyMagnitude);
 
             if (energyMagnitude == 0)
             {
@@ -173,11 +197,17 @@ namespace UniversalMachine
             {
                 contactForce = f / (KineticEasing * (energyMagnitude / EnergeticResistance)) * Depth;
             }
+
+            //Debug.Log("Depth: " + Depth);
+            //Debug.Log("Energy Magnitude: " + energyMagnitude);
+            //Debug.Log("Contact Force: " + contactForce);
  
 
             float totalDiscernment = Assertion.w * Ascription.w * Mathf.Pow(Attunement.w, 2) * Mathf.Pow(Conductance.w, 3);
             float discernmentRatio = GetDiscernmentRatio(totalDiscernment, temporal);
 
+            //Debug.Log("Total Discernment: " + totalDiscernment);
+            //Debug.Log("Discernment Ratio: " + discernmentRatio);
 
             Vector3 pf = Conduct(temporal);
             Conductance = new Vector4(
@@ -590,29 +620,54 @@ namespace UniversalMachine
         //A.K.A. Only William Really Knows What It Does! Till Now :)
         public float Expostulate(float deltaTime)
         {
-            float dimensionality = Ascription.w + Assertion.w + Attunement.w + Conductance.w;
+            // 1. Calculate dimensionality
+            float dimensionality = Ascription.w + (Attunement.w * Mathf.PI * Conductance.w);
+            //Debug.Log($"Dimensionality: {dimensionality}");
 
+            // 2. Calculate the sum of the exponents of each property
             float primordials = Mathf.Pow(Ascription.x, deltaTime);
+            //Debug.Log($"Ascription.x: {Ascription.x}");
+            //Debug.Log($"deltaTime: {deltaTime}");
+            //Debug.Log($"Primordials (Ascription.x): {primordials}");
             primordials += Mathf.Pow(Ascription.y, deltaTime);
+            //Debug.Log($"Ascription.y: {Ascription.y}");
+            //Debug.Log($"Primordials (Ascription.y): {primordials}");
             primordials += Mathf.Pow(Ascription.z, deltaTime);
-            
+            //Debug.Log($"Ascription.z: {Ascription.z}");
+            //Debug.Log($"Primordials (Ascription.z): {primordials}");
+
             primordials += Mathf.Pow(Assertion.x, deltaTime);
+            //Debug.Log($"Assertion.x: {Assertion.x}");
+            //Debug.Log($"Primordials (Assertion.x): {primordials}");
             primordials += Mathf.Pow(Assertion.y, deltaTime);
+            //Debug.Log($"Assertion.y: {Assertion.y}");
+            //Debug.Log($"Primordials (Assertion.y): {primordials}");
             primordials += Mathf.Pow(Assertion.z, deltaTime);
+            //Debug.Log($"Assertion.z: {Assertion.z}");
+            //Debug.Log($"Primordials (Assertion.z): {primordials}");
 
             primordials += Mathf.Pow(Attunement.x, deltaTime);
+            //Debug.Log($"Attunement.x: {Attunement.x}");
+            //Debug.Log($"Primordials (Attunement.x): {primordials}");
             primordials += Mathf.Pow(Attunement.y, deltaTime);
+            //Debug.Log($"Attunement.y: {Attunement.y}");
+            //Debug.Log($"Primordials (Attunement.y): {primordials}");
             primordials += Mathf.Pow(Attunement.z, deltaTime);
+            //Debug.Log($"Attunement.z: {Attunement.z}");
+            //Debug.Log($"Primordials (Attunement.z): {primordials}");
 
             primordials += Mathf.Pow(Conductance.x, deltaTime);
+            //Debug.Log($"Conductance.x: {Conductance.x}");
+            //Debug.Log($"Primordials (Conductance.x): {primordials}");
             primordials += Mathf.Pow(Conductance.y, deltaTime);
+            //Debug.Log($"Conductance.y: {Conductance.y}");
+            //Debug.Log($"Primordials (Conductance.y): {primordials}");
             primordials += Mathf.Pow(Conductance.z, deltaTime);
+            //Debug.Log($"Conductance.z: {Conductance.z}");
+            //Debug.Log($"Primordials (Conductance.z): {primordials}");
 
-            primordials /= Mathf.Pow(deltaTime, 3);
-            primordials *= Mathf.Pow(dimensionality, 5);
-
-            primordials *= Mathf.Pow(1, deltaTime);
-
+            // Return the total primordials value
+            //Debug.Log($"Primordials: {primordials}");
             return primordials;
         }
 
@@ -649,19 +704,41 @@ namespace UniversalMachine
             Destination += delta;
         }
 
+        public Vector3 GetLightDirection(Light light)
+        {
+            // Get the particle's position
+            Vector3 particlePosition = transform.position; // Assuming this script is attached to the particle
+
+            // Calculate the light direction from the particle's position to the light source
+            Vector3 lightDirection = light.transform.position - particlePosition;
+
+            // Normalize the light direction
+            lightDirection.Normalize();
+
+            return lightDirection;
+        }
+
         void Start()
         {
             material = GetComponent<Renderer>().material;
+
             ParticleField.Instance.Attach(this);
-            onDestroy += () => { ParticleField.Instance.Detach(this); };
+            positionManager.AddParticle(this);
+            onDestroy += () =>
+            {
+                ParticleField.Instance.Detach(this);
+                positionManager.RemoveParticle(this);
+            };
         }
 
         void Update()
         {
-            material.SetFloat("_ParticleDepth", Depth);
-            material.SetFloat("_ParticleReach", Reach.magnitude);
-            material.SetVector("_ParticleAscription", Ascription);
-            material.SetVector("_ParticleDelta", Delta); // New line for Delta
+            TimeSinceWarped += Time.deltaTime;
+
+            //material.SetFloat("_ParticleDepth", Depth);
+            //material.SetFloat("_ParticleReach", Reach.magnitude);
+            //material.SetVector("_ParticleAscription", Ascription);
+            //material.SetVector("_ParticleDelta", Delta); // New line for Delta
         }
 
         void FixedUpdate()

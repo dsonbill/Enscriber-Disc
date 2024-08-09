@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RenderPipelineSettings:
     supportShadowMask: 1
-    supportSSR: 0
-    supportSSRTransparent: 0
+    supportSSR: 1
+    supportSSRTransparent: 1
     supportSSAO: 1
-    supportSSGI: 0
+    supportSSGI: 1
     supportSubsurfaceScattering: 1
     sssSampleBudget:
       m_Values: 140000002800000050000000
@@ -53,7 +53,7 @@ MonoBehaviour:
     colorBufferFormat: 74
     supportCustomPass: 1
     customBufferFormat: 8
-    supportedLitShaderMode: 2
+    supportedLitShaderMode: 3
     planarReflectionResolution:
       m_Values: 000100000004000000080000
       m_SchemaId:
@@ -66,8 +66,8 @@ MonoBehaviour:
     supportDecalLayers: 0
     supportSurfaceGradient: 1
     decalNormalBufferHP: 0
-    supportHighQualityLineRendering: 0
-    highQualityLineRenderingMemoryBudget: 128
+    supportHighQualityLineRendering: 1
+    highQualityLineRenderingMemoryBudget: 256
     msaaSampleCount: 1
     supportMotionVectors: 1
     supportScreenSpaceLensFlare: 1
@@ -148,7 +148,7 @@ MonoBehaviour:
       maxDirectionalShadowMapResolution: 2048
       maxPunctualShadowMapResolution: 2048
       maxAreaShadowMapResolution: 2048
-      supportScreenSpaceShadows: 0
+      supportScreenSpaceShadows: 1
       maxScreenSpaceShadowSlots: 4
       screenSpaceShadowBufferFormat: 48
     decalSettings:

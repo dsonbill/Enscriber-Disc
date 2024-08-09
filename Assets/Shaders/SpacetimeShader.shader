@@ -8,66 +8,65 @@ Shader "Custom/SpacetimeShader" {
         _WarpFalloff ("Warp Falloff", Float) = 1.0
     }
     SubShader {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "RenderPipeline" = "HDRenderPipeline" }
         LOD 100
 
         Pass {
-            CGPROGRAM
+            HLSLPROGRAM
+            #pragma target 4.5 // Essential for HDRP
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float4 _WarpingVectors[100]; // Assuming max 100 warping vectors
+            float4 _WarpingVectors[100]; 
             int _NumWarpingVectors;
             float _WarpIntensity;
             float _WarpScale;
             float _WarpFalloff;
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
+            struct Attributes {
+                float4 positionOS   : POSITION;
+                float2 uv           : TEXCOORD0;
             };
 
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float3 worldPos : TEXCOORD1;
+            struct Varyings {
+                float4 positionCS   : SV_POSITION;
+                float2 uv           : TEXCOORD0;
+                float3 worldPos     : TEXCOORD1;
             };
 
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz; 
-                return o;
+            Varyings vert (Attributes input) {
+                Varyings output;
+                output.positionCS = TransformObjectToHClip(input.positionOS.xyz); 
+                output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+                output.worldPos = mul(UNITY_MATRIX_M, input.positionOS).xyz;
+                return output;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag (Varyings input) : SV_Target 
             {
                 // 1. Sample Main Texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                half4 col = tex2D(_MainTex, input.uv);
 
                 // 2. Calculate Warped UV
-                float2 warpedUV = i.uv; // Start with original UV
+                float2 warpedUV = input.uv; // Start with original UV
                 for (int j = 0; j < _NumWarpingVectors; j++)
                 {
                     float3 warpVectorPos = _WarpingVectors[j].xyz;
                     float warpMagnitude = _WarpingVectors[j].w * _WarpIntensity; // Apply warp intensity
 
                     // Calculate distance to warping vector
-                    float distanceToWarp = distance(i.worldPos, warpVectorPos);
+                    float distanceToWarp = distance(input.worldPos, warpVectorPos);
 
                     // Calculate warp amount based on distance and falloff
                     float warpAmount = warpMagnitude / (distanceToWarp * distanceToWarp + _WarpFalloff); // Custom falloff
 
                     // Calculate warp direction (you might need to adjust this based on Contact Theory)
-                    float2 warpDirection = normalize(i.uv - float2(warpVectorPos.x, warpVectorPos.z)) * _WarpScale; 
+                    float2 warpDirection = normalize(input.uv - float2(warpVectorPos.x, warpVectorPos.z)) * _WarpScale; 
 
                     // Apply warping to UV
                     warpedUV += warpAmount * warpDirection;
@@ -78,7 +77,7 @@ Shader "Custom/SpacetimeShader" {
 
                 return col;
             }
-            ENDCG
+            ENDHLSL
         }
     }
     FallBack "Diffuse"
