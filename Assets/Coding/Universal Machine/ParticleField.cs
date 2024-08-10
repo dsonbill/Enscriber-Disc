@@ -73,6 +73,7 @@ namespace UniversalMachine
             }
 
         }
+
         void Update() {
 
             CurrentParticles = new int[ParticlesPerUpdate];
@@ -93,8 +94,10 @@ namespace UniversalMachine
                 Zone.Friction(Simulands[y]);
                 Zone.ApplyForceAffair(Simulands[y]);
 
-                //if(Simulands[y].TimeSinceWarped >= Substrate.WarpVectorThreshold)
-                //    Substrate.UpdateWarpingVectors(Simulands[y]);
+                if(Simulands[y].TimeSinceWarped >= Substrate.WarpVectorThreshold)
+                    Substrate.UpdateWarpingVectors(Simulands[y]);
+
+                Substrate.CalculateWarpedPosition(Simulands[y]);
 
                 //Substrate.UpdateParticleShaderProperties(Simulands[y].material);
 
@@ -109,7 +112,7 @@ namespace UniversalMachine
                 foreach (int c in CurrentParticles) 
                     simulatedParticles.Add(Simulands[c]);
 
-                if (simulatedParticles.Count > 0)
+                if (simulatedParticles.Count - 1 > 0)
                     ForceExchanger.Exchange(simulatedParticles, Simulands[y]);
 
                 CurrentParticles[i] = y;

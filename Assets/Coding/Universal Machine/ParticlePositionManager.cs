@@ -43,14 +43,15 @@ public class ParticlePositionManager : MonoBehaviour
             Vector3 lightDir = particle.GetLightDirection(lightSource.Light);
             float distToLight = lightDir.magnitude;
             Vector3 forceDelta = particle.Delta;
-            //forceDelta *= lightSource.Intensity * lightSource.Potential * lightSource.Attenuation / (distToLight * distToLight);
+            forceDelta *= lightSource.Intensity * lightSource.Potential * lightSource.Attenuation / (distToLight * distToLight);
 
             // Add the torque to the force
             Vector3 torque = Mul(Vector3.Cross(lightDir, particle.Velocity) * lightSource.TorqueStrength, lightSource.CalculateTorque(particle));
-            //forceDelta = Mul(forceDelta, torque); // Apply the torque to the force
+            forceDelta = Mul(forceDelta, torque); // Apply the torque to the force
 
             // Apply the force to the particle's position
-            particle.transform.position += forceDelta;
+            Vector3 tryMeFaggot = particle.Applicate(forceDelta);
+            particle.transform.position += tryMeFaggot;
 
             // Reset Delta for the next frame
             particle.Delta = Vector3.zero;
