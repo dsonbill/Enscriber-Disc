@@ -1,3 +1,5 @@
+name: Actions
+
 jobs:
   acquire_ulf:
     name: Acquire .ulf file 🔑
