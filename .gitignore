@@ -74,3 +74,7 @@ crashlytics-build.properties
 # Who knows where it's coming from, little pesky rat
 desktop.ini
 desktop.ini.meta
+
+# Ignore temporaries from GameCI
+/[Aa]rtifacts/
+/[Cc]odeCoverage/
