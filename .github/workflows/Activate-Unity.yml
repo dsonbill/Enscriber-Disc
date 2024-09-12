@@ -1,5 +1,7 @@
 name: Actions
 
+on: [push, pull_request]
+
 jobs:
   acquire_ulf:
     name: Acquire .ulf file 🔑
