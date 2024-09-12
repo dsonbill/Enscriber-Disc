@@ -1,2 +1,1 @@
-action: Activate
-    uses: game-ci/unity-activate@v2.0.0
+
