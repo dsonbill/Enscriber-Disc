@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using NUnit.Framework; // Use TextMeshPro for curved text
+using TMPro; // Use TextMeshPro for curved text
 
 namespace UniversalMachine
 {
